@@ -13,10 +13,22 @@
         <action
             android:id="@+id/actionCreateTodo"
             app:destination="@id/createTodoFragment" />
+        <action
+            android:id="@+id/actionEditToDo"
+            app:destination="@id/editToDoFragment" />
     </fragment>
     <fragment
         android:id="@+id/createTodoFragment"
         android:name="com.example.todoapp.view.CreateTodoFragment"
         android:label="fragment_create_todo"
         tools:layout="@layout/fragment_create_todo" />
+    <fragment
+        android:id="@+id/editToDoFragment"
+        android:name="com.example.todoapp.view.EditToDoFragment"
+        android:label="fragment_edit_to_do"
+        tools:layout="@layout/fragment_edit_to_do" >
+        <argument
+            android:name="uuid"
+            app:argType="integer" />
+    </fragment>
 </navigation>
