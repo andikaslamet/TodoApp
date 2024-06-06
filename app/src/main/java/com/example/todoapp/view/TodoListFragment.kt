@@ -15,9 +15,53 @@ import com.example.todoapp.viewmodel.ListTodoViewModel
 
 
 class TodoListFragment : Fragment() {
+    private lateinit var binding: FragmentTodoListBinding
     private lateinit var viewModel: ListTodoViewModel
     private val todoListAdapter  = TodoListAdapter(arrayListOf(),{ item -> viewModel.clearTask(item) })
-    private lateinit var binding: FragmentTodoListBinding
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel = ViewModelProvider(this).get(ListTodoViewModel::class.java)
+        viewModel.refresh()
+        binding.recViewToDo.layoutManager = LinearLayoutManager(context)
+        binding.recViewToDo.adapter = todoListAdapter
+
+        binding.btnFab.setOnClickListener {
+            val action = TodoListFragmentDirections.actionCreateTodo()
+            Navigation.findNavController(it).navigate(action)
+        }
+        observeViewModel()
+    }
+
+    fun observeViewModel() {
+        viewModel.todoLD.observe(viewLifecycleOwner, Observer {
+            todoListAdapter.updateTodoList(it)
+            if(it.isEmpty()) {
+                binding.recViewToDo?.visibility = View.GONE
+                binding.txtError.setText("Your todo still empty.")
+                binding.txtError.visibility= View.VISIBLE
+            } else {
+                binding.recViewToDo?.visibility = View.VISIBLE
+            }
+        })
+        viewModel.loadingLD.observe(viewLifecycleOwner, Observer {
+            if(it == false) {
+                binding.progressBar?.visibility = View.GONE
+            } else {
+                binding.progressBar?.visibility = View.VISIBLE
+            }
+        })
+        viewModel.todoLoadErrorLD.observe(viewLifecycleOwner, Observer {
+            if(it == false) {
+                binding.txtError?.visibility = View.GONE
+            } else {
+                binding.txtError?.visibility = View.VISIBLE
+                binding.txtError.text = "An error occurred"
+            }
+        })
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -26,45 +70,5 @@ class TodoListFragment : Fragment() {
         return  binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ListTodoViewModel::class.java)
-        viewModel.refresh()
-        binding.recViewToDo.layoutManager = LinearLayoutManager(context)
-        binding.recViewToDo.adapter = todoListAdapter
-        binding.btnFab.setOnClickListener {
-            val action = TodoListFragmentDirections.actionCreateTodo()
-            Navigation.findNavController(it).navigate(action)
-        }
-
-        observeViewModel()
-
-    }
-    fun observeViewModel() {
-        viewModel.todoLD.observe(viewLifecycleOwner, Observer {
-            todoListAdapter.updateTodoList(it)
-            if(it.isEmpty()) {
-                binding.recViewToDo?.visibility = View.GONE
-                binding.txtError.setText("Your todo still empty.")
-            } else {
-                binding.recViewToDo?.visibility = View.VISIBLE
-            }
-            viewModel.loadingLD.observe(viewLifecycleOwner, Observer {
-                if(it == false) {
-                    binding.progressBar?.visibility = View.GONE
-                } else {
-                    binding.progressBar?.visibility = View.VISIBLE
-                }
-            })
-            viewModel.todoLoadErrorLD.observe(viewLifecycleOwner, Observer {
-                if(it == false) {
-                    binding.txtError?.visibility = View.GONE
-                } else {
-                    binding.txtError?.visibility = View.VISIBLE
-                }
-            })
-        })
-
-    }
 
 }

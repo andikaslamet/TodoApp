@@ -14,23 +14,36 @@ import kotlin.coroutines.CoroutineContext
 
 class DetailTodoViewModel(application: Application)
     : AndroidViewModel(application), CoroutineScope {
+
     private val job = Job()
     val todoLD = MutableLiveData<Todo>()
-    fun fetch(uuid:Int) {
-        launch {
-            val db = buildDb(getApplication())
-            todoLD.postValue(db.todoDao().selectTodo(uuid))
-        }
-    }
 
-    fun addTodo(list: List<Todo>) {
-        launch {
-            val db = buildDb(getApplication())
-
-            db.todoDao().insertAll(*list.toTypedArray())
-        }
-    }
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.IO
 
+    fun fetch(uuid:Int) {
+        launch {
+            todoLD.postValue(buildDb(getApplication()).todoDao().selectTodo(uuid))
+        }
+    }
+    fun addTodo(list: List<Todo>) {
+        launch {
+            val db = buildDb(getApplication())
+            db.todoDao().insertAll(*list.toTypedArray())
+        }
+    }
+    //fun update(title:String, notes:String, priority:Int, uuid:Int) {
+    //    launch {
+    //        val db = buildDb(getApplication())
+    //        db.todoDao().update(title, notes, priority, uuid)
+    //    }
+    //}
+
+    //cara dosen
+    fun update(todo:Todo) {
+        launch {
+            buildDb(getApplication()).todoDao().updateTodo(todo)
+        }
+    }
+    //
 }

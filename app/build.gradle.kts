@@ -9,6 +9,7 @@ android {
     namespace = "com.example.todoapp"
     compileSdk = 34
     buildFeatures {
+        dataBinding = true
         viewBinding = true
     }
 
