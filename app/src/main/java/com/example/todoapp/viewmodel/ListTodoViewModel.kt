@@ -3,6 +3,7 @@ package com.example.todoapp.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.todoapp.model.Todo
 import com.example.todoapp.model.TodoDatabase
 import com.example.todoapp.util.buildDb
